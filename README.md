@@ -1,2 +1,3 @@
-#NBA_KMeans
-Clustering of NBA players
+# NBA Players KMeans clustering
+
+Clustering of NBA players based on their statistics
