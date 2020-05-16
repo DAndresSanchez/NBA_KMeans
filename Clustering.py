@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Clustering of NBA players based on their statistics
+Clustering of NBA players based on their statistics.
 
 Created on Mon May 11 14:46:21 2020
 
