@@ -110,15 +110,26 @@ output_file('stats.html')
 show(plot)
 
 
-#%% Machine Learning: clustering
-#
-#from sklearn.cluster import SpectralClustering
-#model = SpectralClustering(n_clusters=3)
-#model.fit(df)
-#labels = model.predict(df)
-#print(model.inertia_)
+#%% Scree Plot for PCA 
 
-#%% Machine Learning: PCA visualisation
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=10)
+principalComponents = pca.fit_transform(df)
+principalDf = pd.DataFrame(data = principalComponents
+             , columns = ['principal component '+str(e) for e in range(1,11)])
+
+# scree plot to measure the weight of each principal component
+scree = pd.DataFrame({'Variation':pca.explained_variance_ratio_,
+             'Principal Component':['PC'+str(e) for e in range(1,11)]})
+sns.barplot(x='Principal Component',y='Variation', 
+           data=scree, color="c")
+plt.title('Scree Plot')
+# PC1 explains more than 75% of the variation
+# PC1 and PC2 together account for almost 90% of the variation 
+# Using PC1 and PC2 would be a good approximation
+
+#%% Machine Learning: PCA 2D visualisation
 
 from sklearn.decomposition import PCA
 
@@ -147,25 +158,27 @@ ax.legend(label)
 ax.grid()
 
 
-#%% WIP PCA and Logistic Regression classifier
 
-https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
-from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-X_train_std = sc.fit_transform(X_train)
-X_test_std = sc.transform(X_test)
+         
+#%% PCA and Logistic Regression classifier
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.decomposition import PCA
-
-# intialize pca and logistic regression model
-pca = PCA(n_components=2)
-lr = LogisticRegression(multi_class='auto', solver='liblinear')
-
-# fit and transform data
-X_train_pca = pca.fit_transform(X_train_std)
-X_test_pca = pca.transform(X_test_std)
-lr.fit(X_train_pca, y_train)
+#https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
+#from sklearn.preprocessing import StandardScaler
+#sc = StandardScaler()
+#X_train_std = sc.fit_transform(X_train)
+#X_test_std = sc.transform(X_test)
+#
+#from sklearn.linear_model import LogisticRegression
+#from sklearn.decomposition import PCA
+#
+## intialize pca and logistic regression model
+#pca = PCA(n_components=2)
+#lr = LogisticRegression(multi_class='auto', solver='liblinear')
+#
+## fit and transform data
+#X_train_pca = pca.fit_transform(X_train_std)
+#X_test_pca = pca.transform(X_test_std)
+#lr.fit(X_train_pca, y_train)
 
 
 
