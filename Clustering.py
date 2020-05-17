@@ -160,7 +160,7 @@ ax.grid()
 
 
          
-#%% PCA and Logistic Regression classifier
+#%% PCA and comparison with Logistic Regression classifier
 
 #https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
 #from sklearn.preprocessing import StandardScaler
