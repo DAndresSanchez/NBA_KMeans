@@ -51,30 +51,6 @@ plot.yaxis.axis_label = 'Points'
 output_file('USGvPoints.html')
 show(plot)
 
-
-#%% Machine Learning: KMeans clustering and visualisation in Seaborn
- 
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-from sklearn.cluster import KMeans
-
-# define dataframe to apply the KMeans algorithm
-df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
-                    '2PA','2P%','eFG%','USG%']]
-
-# initialise KMeans and fit data
-model = KMeans(n_clusters=3)
-model.fit(df)
-
-# get clusters labels and assign them to dataframe
-labels = model.predict(df)
-df['labels']=labels
-
-# plot main stats in a pair plot after clustering
-sns.pairplot(df, vars=['PTS','USG%','TRB','AST'], hue='labels', palette="husl")
-
-
 #%% Machine Learning: optimal number of clusters
 
 import matplotlib.pyplot as plt
@@ -127,6 +103,30 @@ plt.grid(linestyle='-', linewidth=0.5)
 plt.show()
 
 
+#%% Machine Learning: KMeans clustering and visualisation in Seaborn
+ 
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from sklearn.cluster import KMeans
+
+# define dataframe to apply the KMeans algorithm
+df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
+                    '2PA','2P%','eFG%','USG%']]
+
+# initialise KMeans and fit data
+n_clusters = 7
+model = KMeans(n_clusters=n_clusters)
+model.fit(df)
+
+# get clusters labels and assign them to dataframe
+labels = model.predict(df)
+df['labels']=labels
+
+# plot main stats in a pair plot after clustering
+sns.pairplot(df, vars=['PTS','USG%','TRB','AST'], hue='labels', palette="husl")
+
+
 
 
 
@@ -135,12 +135,14 @@ plt.show()
 from bokeh.plotting import ColumnDataSource, figure, output_file, show
 from bokeh.models import LabelSet, Title, HoverTool, CategoricalColorMapper
 import pandas as pd
+from bokeh.palettes import Category10
 
 # define source for Bokeh graph
 source = ColumnDataSource(data=dict(x=list(red_stats['USG%']),
                                     y=list(red_stats['PTS']),
                                     desc=list(red_stats['Player']),
-                                    season=list(red_stats['Season']),
+                          
+                            season=list(red_stats['Season']),
                                     labels=list(map(str, list(labels)))
                                     ))
 
@@ -152,8 +154,8 @@ hover = HoverTool(tooltips=[
 
 # define the colors for mapping the labels from KMeans
 mapper = CategoricalColorMapper(
-        factors=['0', '1', '2'],
-        palette=['red', 'green', 'blue'])
+        factors=[str(i+1) for i in range(n_clusters)],
+        palette=Category10[n_clusters])
 
 # define and show graph
 plot = figure(plot_width=1000, plot_height=400, tools=[hover])
