@@ -128,6 +128,7 @@ df['Labels']=labels
 # visualisation
 plt.figure(figsize=(16,16))
 plt.subplot(221)
+plt.title('No preprocessing')
 cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
 sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
 
@@ -147,6 +148,7 @@ labels = pipeline.predict(df)
 df['Labels']=labels
 # visualisation
 plt.subplot(222)
+plt.title('StandardScaler')
 cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
 sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
 
@@ -166,6 +168,7 @@ labels = pipeline.predict(df)
 df['Labels']=labels
 # visualisation
 plt.subplot(223)
+plt.title('Normalizer')
 cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
 sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
 
@@ -184,17 +187,19 @@ labels = pipeline.predict(df)
 df['Labels']=labels
 # visualisation
 plt.subplot(224)
+plt.title('MaxAbsScaler')
 cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
 sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
 
 
-#%% Machine Learning: KMeans clustering with Normalizer and visualisation in Seaborn
+#%% Machine Learning: KMeans clustering with StandardScaler and visualisation in Seaborn
  
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from sklearn.pipeline import make_pipeline
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import Normalizer
+from sklearn.preprocessing import StandardScaler
 
 # define dataframe to apply the KMeans algorithm
 df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
@@ -202,9 +207,9 @@ df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
 
 # initialise KMeans and fit data
 n_clusters = 5
-norm = Normalizer()
+scaler = StandardScaler()
 kmeans = KMeans(n_clusters=n_clusters)
-pipeline = make_pipeline(norm, kmeans)
+pipeline = make_pipeline(scaler, kmeans)
 pipeline.fit(df)
 
 # get clusters labels and assign them to dataframe
@@ -225,8 +230,9 @@ import pandas as pd
 from bokeh.palettes import Category10
 
 # define source for Bokeh graph
-source = ColumnDataSource(data=dict(x=list(red_stats['USG%']),
-                                    y=list(red_stats['PTS']),
+source = ColumnDataSource(data=dict(USG=list(red_stats['USG%']),
+                                    PTS=list(red_stats['PTS']),
+                                    AST=list(red_stats['AST']),
                                     desc=list(red_stats['Player']),
                           
                             season=list(red_stats['Season']),
@@ -244,15 +250,73 @@ mapper = CategoricalColorMapper(
         factors=[str(i+1) for i in range(n_clusters)],
         palette=Category10[n_clusters])
 
-# define and show graph
+# define and show graph USG% vs PTS
 plot = figure(plot_width=1000, plot_height=400, tools=[hover])
-plot.circle('x', 'y', source=source, size=10, alpha=0.5, 
+plot.circle('USG', 'PTS', source=source, size=10, alpha=0.75, 
             color={'field': 'labels',
                    'transform': mapper})
 plot.xaxis.axis_label = 'Usage %'
 plot.yaxis.axis_label = 'Points'
-output_file('stats.html')
+output_file('USGvPTS.html')
 show(plot)
+
+
+# define a hover as player and season
+hover2 = HoverTool(tooltips=[
+        ('Player', '@desc'),
+        ('Season', '@season'),
+        ])
+# define the colors for mapping the labels from KMeans
+mapper2 = CategoricalColorMapper(
+        factors=[str(i+1) for i in range(n_clusters)],
+        palette=Category10[n_clusters])
+# define source for Bokeh graph
+source2 = ColumnDataSource(data=dict(USG=list(red_stats['USG%']),
+                                    PTS=list(red_stats['PTS']),
+                                    AST=list(red_stats['AST']),
+                                    desc=list(red_stats['Player']),
+                          
+                            season=list(red_stats['Season']),
+                                    labels=list(map(str, list(labels)))
+                                    ))
+# define and show graph PTS vs AST
+plot2 = figure(plot_width=1000, plot_height=400, tools=[hover2])
+plot2.circle('AST', 'PTS', source=source2, size=10, alpha=0.75, 
+            color={'field': 'labels',
+                   'transform': mapper2})
+plot2.xaxis.axis_label = 'Assists'
+plot2.yaxis.axis_label = 'Points'
+output_file('ASTvPTS.html')
+show(plot2)
+
+
+# define a hover as player and season
+hover3 = HoverTool(tooltips=[
+        ('Player', '@desc'),
+        ('Season', '@season'),
+        ])
+# define the colors for mapping the labels from KMeans
+mapper3 = CategoricalColorMapper(
+        factors=[str(i+1) for i in range(n_clusters)],
+        palette=Category10[n_clusters])
+# define source for Bokeh graph
+source3 = ColumnDataSource(data=dict(USG=list(red_stats['USG%']),
+                                    PTS=list(red_stats['PTS']),
+                                    TRB=list(red_stats['TRB']),
+                                    AST=list(red_stats['AST']),
+                                    desc=list(red_stats['Player']),
+                                    season=list(red_stats['Season']),
+                                    labels=list(map(str, list(labels)))
+                                    ))
+# define and show graph PTS vs AST
+plot3 = figure(plot_width=1000, plot_height=400, tools=[hover3])
+plot3.circle('TRB', 'PTS', source=source3, size=10, alpha=0.75, 
+            color={'field': 'labels',
+                   'transform': mapper3})
+plot3.xaxis.axis_label = 'Total Rebounds'
+plot3.yaxis.axis_label = 'Points'
+output_file('TRBvPTS.html')
+show(plot3)
 
 
 #%% Scree Plot for PCA 
@@ -282,29 +346,52 @@ pca = PCA(n_components=2)
 principalComponents = pca.fit_transform(df)
 principalDf = pd.DataFrame(data = principalComponents
              , columns = ['principal component 1', 'principal component 2'])
-labelsNoIndex=list(df.labels)
+labelsNoIndex=list(df.Labels)
 finalDf= principalDf
 finalDf['labels'] = labels
 
 fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(1,1,1) 
+#ax = fig.add_subplot(1,1,1) 
 ax.set_xlabel('Principal Component 1', fontsize = 15)
 ax.set_ylabel('Principal Component 2', fontsize = 15)
 ax.set_title('2 component PCA', fontsize = 20)
-label=[0, 1, 2]
-colors = ['r', 'g', 'b']
+
+label=[str(i+1) for i in range(n_clusters)]
+colors = Category10[n_clusters]
 for label, color in zip(label,colors):
     indicesToKeep = finalDf['labels'] == label
     ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
                , finalDf.loc[indicesToKeep, 'principal component 2']
                , c = color
                , s = 50)
-ax.legend(label)
-ax.grid()
 
+# define a hover as player and season
+hoverPCA = HoverTool(tooltips=[
+        ('Player', '@desc'),
+        ('Season', '@season'),
+        ])
+# define the colors for mapping the labels from KMeans
+mapperPCA = CategoricalColorMapper(
+        factors=[str(i+1) for i in range(n_clusters)],
+        palette=Category10[n_clusters])
+# define source for Bokeh graph
+sourcePCA = ColumnDataSource(data=dict(x=list(finalDf['principal component 1']),
+                                    y=list(finalDf['principal component 2']),
+                                    desc=list(red_stats['Player']),
+                                    season=list(red_stats['Season']),
+                                    labels=list(map(str, list(labels)))
+                                    ))
+# define and show graph PC1 vs PC2
+plotPCA = figure(plot_width=1000, plot_height=400, tools=[hoverPCA])
+plotPCA.circle('x', 'y', source=sourcePCA, size=10, alpha=0.75, 
+            color={'field': 'labels',
+                   'transform': mapperPCA})
+plotPCA.xaxis.axis_label = 'PC1'
+plotPCA.yaxis.axis_label = 'PC2'
+output_file('PCA.html')
+show(plotPCA)
 
-
-         
+  
 #%% PCA and comparison with Logistic Regression classifier
 
 #https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
