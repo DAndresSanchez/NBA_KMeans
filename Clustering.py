@@ -56,7 +56,9 @@ show(plot)
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
+from sklearn.pipeline import make_pipeline
 from sklearn.metrics import silhouette_score
 
 # define dataframe to apply the KMeans algorithm
@@ -68,11 +70,13 @@ inertia={}
 sil_coeff={}
 for k in range(2,21):
     # initialise KMeans and fit data
-    model = KMeans(n_clusters=k)
-    model.fit(df)
-    label = model.labels_
+    scaler = StandardScaler()
+    kmeans = KMeans(n_clusters=k)
+    pipeline = make_pipeline(scaler, kmeans)
+    pipeline.fit(df)
+    label = kmeans.labels_
     # get inertia (Sum of distances of samples to their closest cluster center)
-    inertia[k] = model.inertia_ 
+    inertia[k] = kmeans.inertia_ 
     # get silhouette score
     sil_coeff[k] = silhouette_score(df, label, metric='euclidean')
     
@@ -103,32 +107,115 @@ plt.grid(linestyle='-', linewidth=0.5)
 plt.show()
 
 
-#%% Machine Learning: KMeans clustering and visualisation in Seaborn
+#%% Comparison of preprocessing techniques for KMeans clustering
  
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from sklearn.cluster import KMeans
 
+# KMeans clustering without preprocessing
+# define dataframe to apply the KMeans algorithm
+df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
+                    '2PA','2P%','eFG%','USG%']]
+n_clusters = 5
+# initialise KMeans and fit data
+kmeans = KMeans(n_clusters=n_clusters)
+kmeans.fit(df)
+# get clusters labels and assign them to dataframe
+labels = kmeans.predict(df)
+df['Labels']=labels
+# visualisation
+plt.figure(figsize=(16,16))
+plt.subplot(221)
+cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
+sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
+
+# KMeans clustering with StandardScaler
+from sklearn.preprocessing import StandardScaler
+# define dataframe to apply the KMeans algorithm
+df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
+                    '2PA','2P%','eFG%','USG%']]
+n_clusters = 5
+# initialise KMeans and fit data
+scaler = StandardScaler()
+kmeans = KMeans(n_clusters=n_clusters)
+pipeline = make_pipeline(scaler, kmeans)
+pipeline.fit(df)
+# get clusters labels and assign them to dataframe
+labels = pipeline.predict(df)
+df['Labels']=labels
+# visualisation
+plt.subplot(222)
+cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
+sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
+
+# KMeans clustering with Normalizer
+
+from sklearn.preprocessing import Normalizer
+# define dataframe to apply the KMeans algorithm
+df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
+                    '2PA','2P%','eFG%','USG%']]
+# initialise KMeans and fit data
+norm = Normalizer()
+kmeans = KMeans(n_clusters=n_clusters)
+pipeline = make_pipeline(norm, kmeans)
+pipeline.fit(df)
+# get clusters labels and assign them to dataframe
+labels = pipeline.predict(df)
+df['Labels']=labels
+# visualisation
+plt.subplot(223)
+cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
+sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
+
+# KMeans clustering with MaxAbsScaler
+from sklearn.preprocessing import MaxAbsScaler
+# define dataframe to apply the KMeans algorithm
+df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
+                    '2PA','2P%','eFG%','USG%']]
+# initialise KMeans and fit data
+maxabs = MaxAbsScaler()
+kmeans = KMeans(n_clusters=n_clusters)
+pipeline = make_pipeline(maxabs, kmeans)
+pipeline.fit(df)
+# get clusters labels and assign them to dataframe
+labels = pipeline.predict(df)
+df['Labels']=labels
+# visualisation
+plt.subplot(224)
+cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
+sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
+
+
+#%% Machine Learning: KMeans clustering with Normalizer and visualisation in Seaborn
+ 
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import Normalizer
+
 # define dataframe to apply the KMeans algorithm
 df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
                     '2PA','2P%','eFG%','USG%']]
 
 # initialise KMeans and fit data
-n_clusters = 7
-model = KMeans(n_clusters=n_clusters)
-model.fit(df)
+n_clusters = 5
+norm = Normalizer()
+kmeans = KMeans(n_clusters=n_clusters)
+pipeline = make_pipeline(norm, kmeans)
+pipeline.fit(df)
 
 # get clusters labels and assign them to dataframe
-labels = model.predict(df)
-df['labels']=labels
+labels = pipeline.predict(df)
+df['Labels']=labels
+
+cmap=sns.color_palette(palette="muted", n_colors=n_clusters)
+sns.scatterplot(x='PTS', y='USG%', data=df, hue='Labels', palette=cmap)
 
 # plot main stats in a pair plot after clustering
-sns.pairplot(df, vars=['PTS','USG%','TRB','AST'], hue='labels', palette="husl")
-
-
-
-
+sns.pairplot(df, vars=['PTS','USG%','TRB','AST'], hue='Labels', palette="muted")
 
 #%% Visualisation in Bokeh after KMeans
     
