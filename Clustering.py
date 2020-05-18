@@ -391,27 +391,5 @@ plotPCA.yaxis.axis_label = 'PC2'
 output_file('PCA.html')
 show(plotPCA)
 
-  
-#%% PCA and comparison with Logistic Regression classifier
-
-#https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
-#from sklearn.preprocessing import StandardScaler
-#sc = StandardScaler()
-#X_train_std = sc.fit_transform(X_train)
-#X_test_std = sc.transform(X_test)
-#
-#from sklearn.linear_model import LogisticRegression
-#from sklearn.decomposition import PCA
-#
-## intialize pca and logistic regression model
-#pca = PCA(n_components=2)
-#lr = LogisticRegression(multi_class='auto', solver='liblinear')
-#
-## fit and transform data
-#X_train_pca = pca.fit_transform(X_train_std)
-#X_test_pca = pca.transform(X_test_std)
-#lr.fit(X_train_pca, y_train)
-
-
 
 
