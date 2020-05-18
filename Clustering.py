@@ -74,6 +74,62 @@ df['labels']=labels
 # plot main stats in a pair plot after clustering
 sns.pairplot(df, vars=['PTS','USG%','TRB','AST'], hue='labels', palette="husl")
 
+
+#%% Machine Learning: optimal number of clusters
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+# define dataframe to apply the KMeans algorithm
+df=red_stats.loc[:,['PTS','AST','TRB','STL','BLK', 'FG%','3P','3PA','3P%','2P',
+                    '2PA','2P%','eFG%','USG%']]
+     
+# selection of optimal number of clusters:
+inertia={}
+sil_coeff={}
+for k in range(2,21):
+    # initialise KMeans and fit data
+    model = KMeans(n_clusters=k)
+    model.fit(df)
+    label = model.labels_
+    # get inertia (Sum of distances of samples to their closest cluster center)
+    inertia[k] = model.inertia_ 
+    # get silhouette score
+    sil_coeff[k] = silhouette_score(df, label, metric='euclidean')
+    
+# Elbow Criterion Method: visualisation of inertia
+plt.figure(figsize=(16,5))
+plt.subplot(121)
+plt.plot(list(inertia.keys()), list(inertia.values()))
+plt.xlabel("Number of clusters")
+plt.ylabel("Inertia")
+plt.xticks(np.arange(2, 21, step=1))
+plt.grid(linestyle='-', linewidth=0.5)
+# derivative of Inertia curve
+plt.subplot(122)
+plt.plot(list(inertia.keys()),np.gradient(list(inertia.values()),list(inertia.keys())))
+plt.xlabel("Number of clusters")
+plt.ylabel("Derivative of Inertia")
+plt.xticks(np.arange(2, 21, step=1))
+plt.grid(linestyle='-', linewidth=0.5)
+plt.show()
+
+# Silhouette Coefficient Method: visualisation silhouette scores
+plt.figure(figsize=(7.5,5))
+plt.plot(list(sil_coeff.keys()), list(sil_coeff.values()))
+plt.xlabel("Number of clusters")
+plt.ylabel("Silhouette Score")
+plt.xticks(np.arange(2, 21, step=1))
+plt.grid(linestyle='-', linewidth=0.5)
+plt.show()
+
+
+
+
+
 #%% Visualisation in Bokeh after KMeans
     
 from bokeh.plotting import ColumnDataSource, figure, output_file, show
