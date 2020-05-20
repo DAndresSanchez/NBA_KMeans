@@ -108,8 +108,8 @@ def stats_season_adv(seasoni, seasonf=None):
     print(stats.shape)
     print(stats.dtypes)
     print(stats.describe())
-    print(stats.isnull().count())
-    print(stats.isna().count())
+    print(stats.isnull().sum())
+    print(stats.isna().sum())
     
     ## graph showing the average of points recorded by James Harden in each season
     #player='James Harden'
