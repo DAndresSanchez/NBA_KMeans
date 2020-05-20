@@ -1,6 +1,7 @@
 # NBA Players KMeans clustering
 
-Clustering of NBA players based on their statistics
+Extraction of NBA statistics from "basketball-reference.com" to visualise them and detect trends and patterns. 
+Clustering of the top players using KMeans algorithm. 
 
 The project involved:
 - Web scrapping with BeautifulSoup
