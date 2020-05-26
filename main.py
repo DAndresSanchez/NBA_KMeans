@@ -290,8 +290,8 @@ show(plot3)
 # Scree Plot for PCA
 pca = PCA(n_components=10)
 principal_components = pca.fit_transform(df)
-principal_df = pd.DataFrame(data=principal_components
-                            , columns=['principal component ' + str(e) for e in range(1, 11)])
+principal_df = pd.DataFrame(data=principal_components,
+                            columns=['principal component ' + str(e) for e in range(1, 11)])
 
 # Scree plot to measure the weight of each principal component
 scree = pd.DataFrame({'Variation': pca.explained_variance_ratio_,
