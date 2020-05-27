@@ -16,8 +16,6 @@ import seaborn as sns
 from bokeh.models import HoverTool, CategoricalColorMapper
 from bokeh.palettes import Category10
 from bokeh.plotting import ColumnDataSource, figure, output_file, show
-from nba_kmeans.stats_season import stats_season
-from nba_kmeans.stats_season_adv import stats_season_adv
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
@@ -25,7 +23,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler, Normalizer, MaxAbsScaler
 
 # Get the stats from season 2019
-
+stats_bas = pd.read_csv('data/stats_bas.csv')
+stats_adv = pd.read_csv('data/stats_adv.csv')
 
 # Join the basic and the advanced statistics and remove duplicate columns
 stats = pd.concat([stats_bas, stats_adv], axis=1)
@@ -242,7 +241,8 @@ scree = pd.DataFrame({'Variation': pca.explained_variance_ratio_,
                       'Principal Component': ['PC' + str(e) for e in range(1, 11)]})
 sns.barplot(x='Principal Component', y='Variation',
             data=scree, color="c")
-# plt.title('Scree Plot')
+plt.title('Scree Plot')
+plt.show()
 
 # PC1 explains more than 75% of the variation
 # PC1 and PC2 together account for almost 90% of the variation 
