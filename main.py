@@ -25,8 +25,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler, Normalizer, MaxAbsScaler
 
 # Get the stats from season 2019
-stats_bas = stats_season(2019)
-stats_adv = stats_season_adv(2019)
+
 
 # Join the basic and the advanced statistics and remove duplicate columns
 stats = pd.concat([stats_bas, stats_adv], axis=1)
@@ -231,61 +230,6 @@ plot.yaxis.axis_label = 'Points'
 output_file('USGvPTS.html')
 show(plot)
 
-# Define a hover as player and season
-hover2 = HoverTool(tooltips=[
-    ('Player', '@desc'),
-    ('Season', '@season'),
-])
-# Define the colors for mapping the labels from KMeans
-mapper2 = CategoricalColorMapper(
-    factors=[str(i + 1) for i in range(n_clusters)],
-    palette=Category10[n_clusters])
-# Define source for Bokeh graph
-source2 = ColumnDataSource(data=dict(USG=list(red_stats['USG%']),
-                                     PTS=list(red_stats['PTS']),
-                                     AST=list(red_stats['AST']),
-                                     desc=list(red_stats['Player']),
-
-                                     season=list(red_stats['Season']),
-                                     labels=list(map(str, list(labels)))
-                                     ))
-# Define and show graph PTS vs AST
-plot2 = figure(plot_width=1000, plot_height=400, tools=[hover2])
-plot2.circle('AST', 'PTS', source=source2, size=10, alpha=0.75,
-             color={'field': 'labels',
-                    'transform': mapper2})
-plot2.xaxis.axis_label = 'Assists'
-plot2.yaxis.axis_label = 'Points'
-output_file('ASTvPTS.html')
-show(plot2)
-
-# Define a hover as player and season
-hover3 = HoverTool(tooltips=[
-    ('Player', '@desc'),
-    ('Season', '@season'),
-])
-# Define the colors for mapping the labels from KMeans
-mapper3 = CategoricalColorMapper(
-    factors=[str(i + 1) for i in range(n_clusters)],
-    palette=Category10[n_clusters])
-# Define source for Bokeh graph
-source3 = ColumnDataSource(data=dict(USG=list(red_stats['USG%']),
-                                     PTS=list(red_stats['PTS']),
-                                     TRB=list(red_stats['TRB']),
-                                     AST=list(red_stats['AST']),
-                                     desc=list(red_stats['Player']),
-                                     season=list(red_stats['Season']),
-                                     labels=list(map(str, list(labels)))
-                                     ))
-# Define and show graph PTS vs AST
-plot3 = figure(plot_width=1000, plot_height=400, tools=[hover3])
-plot3.circle('TRB', 'PTS', source=source3, size=10, alpha=0.75,
-             color={'field': 'labels',
-                    'transform': mapper3})
-plot3.xaxis.axis_label = 'Total Rebounds'
-plot3.yaxis.axis_label = 'Points'
-output_file('TRBvPTS.html')
-show(plot3)
 
 # Scree Plot for PCA
 pca = PCA(n_components=10)
@@ -298,7 +242,7 @@ scree = pd.DataFrame({'Variation': pca.explained_variance_ratio_,
                       'Principal Component': ['PC' + str(e) for e in range(1, 11)]})
 sns.barplot(x='Principal Component', y='Variation',
             data=scree, color="c")
-plt.title('Scree Plot')
+# plt.title('Scree Plot')
 
 # PC1 explains more than 75% of the variation
 # PC1 and PC2 together account for almost 90% of the variation 
