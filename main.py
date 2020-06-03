@@ -212,7 +212,7 @@ source = ColumnDataSource(data=dict(USG=list(red_stats['USG%']),
 hover = HoverTool(tooltips=[
     ('Player', '@desc'),
     ('Season', '@season'),
-])
+    ])
 
 # Define the colors for mapping the labels from KMeans
 mapper = CategoricalColorMapper(
