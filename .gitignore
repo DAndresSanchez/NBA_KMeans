@@ -4,3 +4,4 @@ References.txt
 *.html
 *.pyc
 *.pynb_checkpoints*
+*.idea*
