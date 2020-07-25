@@ -3,3 +3,4 @@ References.txt
 *test*
 *.html
 *.pyc
+*.pynb_checkpoints*
